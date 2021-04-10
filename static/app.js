@@ -1,4 +1,4 @@
-d3.json('/api/v1.0/restaurantes').then(data => {
+d3.json('http://localhost:5000/api/v1.0/restaurantes').then(data => {
 
     showData(data);
     d3.selectAll('input').on('change', handleChange);

@@ -16,19 +16,31 @@ import pandas as pd
 from flask_pymongo import PyMongo
 from flask import Flask, render_template, redirect, jsonify, Response
 import json
+from flask_cors import CORS, cross_origin
 
 app = Flask(__name__)
+CORS(app, resources={
+    r"/*": {
+        "origins": "*"
+    }
+})
 app.config["MONGO_URI"] = 'mongodb://localhost:27017/project2_db'
+app.config['CORS_HEADERS'] = 'Content-Type'
+app.config['CORS_ORIGINS'] = '*'
+app.config['DEBUG'] = True
+
 mongo = PyMongo(app)
 #db = mongo.project2_db
 print(mongo)
 restaurantes = mongo.db.retaurantes
 
-@app.route('/')
+@app.route('/', methods=["POST", "GET"])
 def home():
-    return render_template('index.html')
+    return ("sample")
+    #return render_template('index.html')
 
-@app.route('/api/v1.0/restaurantes')
+@app.route('/api/v1.0/restaurantes', methods=["POST", "GET"])
+@cross_origin(origin='*')
 def get_data():
     data = restaurantes.find()
     # data = restaurantes.find({'City': 'Orlando '})
@@ -40,7 +52,8 @@ def get_data():
     for document in data:
         document['_id'] = str(document['_id'])
         data_list.append(document)
-    return Response(json.dumps(data_list), mimetype='application/json')
+    return jsonify(data_list)
+    #return Response(json.dumps(data_list), mimetype='application/json')
 
 if __name__=='__main__':
     app.run(debug=True)
